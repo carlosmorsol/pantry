@@ -14,21 +14,16 @@
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); font-size: 16px; }
 
-    /* ── PIN SCREEN ── */
-    #pin-screen {
-      position: fixed; inset: 0; background: var(--green);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 999; flex-direction: column; gap: 20px;
-    }
+    /* ── PIN ── */
+    #pin-screen { position: fixed; inset: 0; background: var(--green); display: flex; align-items: center; justify-content: center; z-index: 999; flex-direction: column; gap: 20px; }
     #pin-screen h2 { font-family: 'Lora', serif; font-size: 26px; color: #fafaf7; }
     #pin-screen p  { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: -12px; }
     .pin-dots { display: flex; gap: 14px; }
     .pin-dot  { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); background: transparent; transition: background 0.15s; }
     .pin-dot.filled { background: var(--green2); border-color: var(--green2); }
     .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 230px; }
-    .pin-btn  { background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 17px; font-size: 20px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.1s; }
+    .pin-btn  { background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 17px; font-size: 20px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .pin-btn:hover { background: rgba(255,255,255,0.2); }
-    .pin-btn.wide  { grid-column: span 2; }
     .pin-error { color: #f87171; font-size: 13px; height: 18px; text-align: center; }
 
     /* ── HEADER ── */
@@ -39,7 +34,7 @@
     .header-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
     .sync-badge { font-size: 12px; background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 8px; white-space: nowrap; }
     .btn-refresh { background: rgba(255,255,255,0.12); color: white; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 500; }
-    .btn-add     { background: var(--green2); color: white; border: none; border-radius: 8px; padding: 9px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-add { background: var(--green2); color: white; border: none; border-radius: 8px; padding: 9px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .stats { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
     .stat { background: rgba(255,255,255,0.1); border-radius: 9px; padding: 8px 14px; text-align: center; min-width: 68px; }
     .stat-val { font-size: 22px; font-weight: 700; }
@@ -72,22 +67,34 @@
     .loc-freezer { background: #f5f3ff; color: #6d28d9; }
     .loc-pantry  { background: #fffbeb; color: #92400e; }
 
-    /* FILL COUNTERS */
+    /* FILL COUNTERS — countable items */
     .fill-counters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .fill-counter { display: flex; flex-direction: row; align-items: center; border-radius: 8px; padding: 5px 9px; border: 1.5px solid; gap: 4px; white-space: nowrap; }
-    .fc-emoji { font-size: 13px; line-height: 1; }
+    .fc-emoji { font-size: 13px; }
     .fc-btn   { background: none; border: none; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 1px; opacity: 0.45; font-family: inherit; font-weight: 700; }
     .fc-btn:hover { opacity: 1; }
-    .fc-val   { font-size: 14px; font-weight: 700; min-width: 16px; text-align: center; line-height: 1; }
+    .fc-val   { font-size: 14px; font-weight: 700; min-width: 16px; text-align: center; }
     .fc-unit  { font-size: 12px; opacity: 0.6; }
+
+    /* QUANTITY — measurable items */
+    .qty-display { display: flex; align-items: center; gap: 6px; }
+    .qty-val  { font-size: 16px; font-weight: 700; color: var(--green); }
+    .qty-unit { font-size: 13px; color: var(--muted); }
+    .qty-btn  { background: none; border: 1.5px solid var(--border); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: inherit; color: var(--muted); }
+    .qty-btn:hover { border-color: var(--green2); color: var(--green); }
+    .qty-step { font-size: 11px; color: var(--muted); margin-left: 2px; }
+
     .all-zero { color: #d1d5db; font-size: 13px; }
+    .type-badge { font-size: 10px; border-radius: 4px; padding: 1px 6px; font-weight: 700; }
+    .type-count { background: #eff6ff; color: #1d4ed8; }
+    .type-measure { background: #f0fdf4; color: #166534; }
 
     td.td-exp  { font-size: 13px; color: var(--muted); white-space: nowrap; }
     .exp-badge { border-radius: 7px; padding: 4px 9px; font-size: 12px; font-weight: 600; }
     .actions  { white-space: nowrap; }
     .btn-edit { background: none; border: 1.5px solid var(--border); border-radius: 7px; padding: 6px 13px; cursor: pointer; font-size: 13px; color: #374151; font-family: inherit; margin-right: 5px; font-weight: 500; }
     .btn-edit:hover { background: var(--bg2); }
-    .btn-del  { background: none; border: 1.5px solid #fca5a5; border-radius: 7px; padding: 6px 13px; cursor: pointer; font-size: 13px; color: #ef4444; font-family: inherit; font-weight: 500; }
+    .btn-del  { background: none; border: 1.5px solid #fca5a5; border-radius: 7px; padding: 6px 13px; cursor: pointer; font-size: 13px; color: #ef4444; font-family: inherit; }
     .btn-del:hover { background: #fef2f2; }
     .empty-row td { padding: 48px; text-align: center; color: var(--muted); font-size: 15px; }
     .tip { margin-top: 16px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #166534; }
@@ -102,14 +109,30 @@
     .field label span { font-weight: 400; text-transform: none; letter-spacing: 0; }
     .field input, .field select { width: 100%; padding: 10px 13px; border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px; font-family: inherit; background: white; color: var(--text); }
     .field input:focus, .field select:focus { outline: none; border-color: var(--green2); }
+
+    /* Type selector */
+    .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
+    .type-opt { padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: white; cursor: pointer; text-align: center; font-family: inherit; transition: all 0.15s; }
+    .type-opt.selected { border-color: var(--green2); background: #f0fdf4; }
+    .type-opt-icon { font-size: 22px; }
+    .type-opt-label { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 4px; }
+    .type-opt-desc  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* Countable modal fills */
     .modal-fills { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
     .modal-fill-row { display: flex; align-items: center; justify-content: space-between; border-radius: 10px; padding: 11px 13px; border: 1.5px solid; }
     .mfr-left  { display: flex; align-items: center; gap: 7px; }
     .mfr-emoji { font-size: 17px; }
     .mfr-label { font-size: 14px; font-weight: 700; }
     .mfr-counter { display: flex; align-items: center; gap: 7px; }
-    .mfr-btn { width: 30px; height: 30px; border-radius: 7px; border: 1.5px solid; background: white; cursor: pointer; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: inherit; line-height: 1; }
+    .mfr-btn { width: 30px; height: 30px; border-radius: 7px; border: 1.5px solid; background: white; cursor: pointer; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: inherit; }
     .mfr-val { font-size: 17px; font-weight: 700; min-width: 22px; text-align: center; }
+
+    /* Measurable qty input */
+    .qty-input-wrap { display: flex; align-items: center; gap: 10px; }
+    .qty-input-wrap input { flex: 1; }
+    .qty-input-wrap select { width: 100px; flex-shrink: 0; }
+
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .btn-cancel { flex: 1; padding: 11px; border-radius: 9px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
     .btn-save   { flex: 2; padding: 11px; border-radius: 9px; border: none; background: var(--green); color: white; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit; }
@@ -123,15 +146,13 @@
 </head>
 <body>
 
-<!-- PIN SCREEN -->
+<!-- PIN -->
 <div id="pin-screen">
   <h2>🛒 Our Pantry</h2>
   <p>Enter your PIN to continue</p>
   <div class="pin-dots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
   </div>
   <div class="pin-error" id="pin-error"></div>
   <div class="pin-grid">
@@ -194,13 +215,13 @@
         <thead>
           <tr>
             <th>Item</th><th>Category</th><th>Location</th>
-            <th>Levels &amp; Qty</th><th>Expiry</th><th>Status</th><th></th>
+            <th>Quantity</th><th>Expiry</th><th>Status</th><th></th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="tip">💡 Tap <strong>+</strong> / <strong>−</strong> to update counts directly. Hit 🔄 Refresh to see the other person's changes.</div>
+    <div class="tip">💡 <strong>Countable items</strong> (eggs, cans) use Full/Half/Low counters. <strong>Measurable items</strong> (chicken, milk) use exact quantities in g/kg/ml/L for accurate shopping lists.</div>
   </main>
 </div>
 
@@ -208,26 +229,81 @@
 <div class="overlay" id="overlay">
   <div class="modal">
     <h2 id="modalTitle">Add item</h2>
-    <div class="field"><label>Name *</label><input type="text" id="f-name" placeholder="e.g. Milk, Chicken, Rice..." /></div>
-    <div class="field"><label>Unit</label>
-      <select id="f-unit">
-        <option>units</option><option>g</option><option>kg</option><option>ml</option><option>L</option>
-        <option>portions</option><option>bag</option><option>box</option><option>can</option>
-      </select>
+
+    <div class="field">
+      <label>Name *</label>
+      <input type="text" id="f-name" placeholder="e.g. Milk, Chicken, Eggs..." />
     </div>
-    <div class="field"><label>How many at each level?</label><div class="modal-fills" id="modalFills"></div></div>
-    <div class="field"><label>Category</label>
+
+    <div class="field">
+      <label>Item type</label>
+      <div class="type-selector">
+        <button class="type-opt selected" id="type-count" onclick="selectType('countable')">
+          <div class="type-opt-icon">📦</div>
+          <div class="type-opt-label">Countable</div>
+          <div class="type-opt-desc">Eggs, cans, bags, boxes</div>
+        </button>
+        <button class="type-opt" id="type-measure" onclick="selectType('measurable')">
+          <div class="type-opt-icon">⚖️</div>
+          <div class="type-opt-label">Measurable</div>
+          <div class="type-opt-desc">Chicken, milk, rice, oil</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Countable section -->
+    <div id="section-countable">
+      <div class="field">
+        <label>Unit</label>
+        <select id="f-unit-count">
+          <option>units</option><option>can</option><option>bag</option>
+          <option>box</option><option>bottle</option><option>slice</option><option>portions</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>How many at each level?</label>
+        <div class="modal-fills" id="modalFills"></div>
+      </div>
+    </div>
+
+    <!-- Measurable section -->
+    <div id="section-measurable" style="display:none">
+      <div class="field">
+        <label>Quantity available</label>
+        <div class="qty-input-wrap">
+          <input type="number" id="f-qty" min="0" placeholder="e.g. 1500" />
+          <select id="f-unit-measure">
+            <option>g</option><option>kg</option><option>ml</option><option>L</option><option>tsp</option><option>tbsp</option><option>cup</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Step size <span>(how much to add/subtract at a time)</span></label>
+        <input type="number" id="f-step" min="1" placeholder="e.g. 500" value="100" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Category</label>
       <select id="f-cat">
         <option>🥩 Proteins</option><option>🥦 Vegetables</option><option>🍎 Fruits</option>
         <option>🧀 Dairy</option><option>🌾 Grains/Carbs</option><option>🥫 Canned</option>
         <option>🧂 Condiments</option><option>🧃 Drinks</option><option>❄️ Frozen</option><option>🍞 Bakery</option>
       </select>
     </div>
-    <div class="field"><label>Location</label>
+    <div class="field">
+      <label>Location</label>
       <select id="f-loc"><option>Fridge</option><option>Freezer</option><option>Pantry</option></select>
     </div>
-    <div class="field"><label>Expiry date <span>(optional)</span></label><input type="date" id="f-expiry" /></div>
-    <div class="field"><label>Notes <span>(optional)</span></label><input type="text" id="f-notes" placeholder="e.g. organic, no salt..." /></div>
+    <div class="field">
+      <label>Expiry date <span>(optional)</span></label>
+      <input type="date" id="f-expiry" />
+    </div>
+    <div class="field">
+      <label>Notes <span>(optional)</span></label>
+      <input type="text" id="f-notes" placeholder="e.g. organic, no salt..." />
+    </div>
+
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save"   onclick="saveItem()">Add item</button>
@@ -245,48 +321,52 @@ const FILLS = [
   { value:"opened", label:"Opened", emoji:"📦", color:"#8b5cf6", bg:"#faf5ff" },
 ];
 
+let items  = [];
+let editId = null;
+let modalCounts = { full:0, half:0, low:0, opened:0 };
+let selectedType = "countable";
+
 // ── PIN ──
 let pinEntry = "";
 function pinPress(k) {
-  if (k === "⌫") { pinEntry = pinEntry.slice(0,-1); }
-  else if (k === "✓") { checkPin(); return; }
-  else if (pinEntry.length < 4) { pinEntry += k; }
+  if (k==="⌫") { pinEntry=pinEntry.slice(0,-1); }
+  else if (k==="✓") { checkPin(); return; }
+  else if (pinEntry.length<4) { pinEntry+=k; }
   updateDots();
-  if (pinEntry.length === 4) setTimeout(checkPin, 120);
+  if (pinEntry.length===4) setTimeout(checkPin,120);
 }
 function updateDots() {
-  for (let i=0;i<4;i++) document.getElementById("d"+i).className = "pin-dot" + (i < pinEntry.length ? " filled" : "");
+  for(let i=0;i<4;i++) document.getElementById("d"+i).className="pin-dot"+(i<pinEntry.length?" filled":"");
 }
 function checkPin() {
-  if (pinEntry === CORRECT_PIN) {
-    document.getElementById("pin-screen").style.display = "none";
-    document.getElementById("app").style.display = "block";
+  if (pinEntry===CORRECT_PIN) {
+    document.getElementById("pin-screen").style.display="none";
+    document.getElementById("app").style.display="block";
     loadItems();
   } else {
-    document.getElementById("pin-error").textContent = "Incorrect PIN. Try again.";
-    pinEntry = ""; updateDots();
-    setTimeout(() => document.getElementById("pin-error").textContent = "", 1500);
+    document.getElementById("pin-error").textContent="Incorrect PIN. Try again.";
+    pinEntry=""; updateDots();
+    setTimeout(()=>document.getElementById("pin-error").textContent="",1500);
   }
 }
 
 // ── Data ──
-let items  = [];
-let editId = null;
-let modalCounts = { full:0, half:0, low:0, opened:0 };
-
+// item: { id, name, category, location, type, unit, counts(countable) OR qty+step(measurable), expiryDate, notes }
 function rowToItem(r) {
-  let counts = { full:0, half:0, low:0, opened:0 };
-  try { counts = JSON.parse(r[4]); } catch {}
-  return { id:r[0], name:r[1], category:r[2], location:r[3], counts, unit:r[5], expiryDate:r[6], notes:r[7] };
+  let data = {};
+  try { data = JSON.parse(r[4]); } catch {}
+  return { id:r[0], name:r[1], category:r[2], location:r[3], data, unit:r[5], expiryDate:r[6], notes:r[7], type:r[8]||"countable", step:parseFloat(r[9])||100 };
 }
-function itemToRow(i) { return [i.id, i.name, i.category, i.location, JSON.stringify(i.counts), i.unit, i.expiryDate, i.notes]; }
+function itemToRow(i) {
+  return [i.id, i.name, i.category, i.location, JSON.stringify(i.data), i.unit, i.expiryDate, i.notes, i.type, i.step||100];
+}
 
 async function loadItems() {
   setSync("⏳ Syncing...");
   try {
-    const res  = await fetch(SCRIPT_URL + "?action=read");
+    const res  = await fetch(SCRIPT_URL + "?action=read&sheet=Hoja%201");
     const data = await res.json();
-    items = data.filter(r => r[0] && r[1]).map(rowToItem);
+    items = data.filter(r=>r[0]&&r[1]).map(rowToItem);
     setSync("☁️ Synced ✓");
   } catch { setSync("⚠️ Could not connect"); }
   renderTable();
@@ -295,26 +375,33 @@ async function loadItems() {
 async function saveToSheets() {
   setSync("💾 Saving...");
   try {
-    await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ action:"write", items: items.map(itemToRow) }) });
+    await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ action:"write", sheet:"Hoja 1", items:items.map(itemToRow) }) });
     setSync("☁️ Saved ✓");
   } catch { setSync("⚠️ Save failed"); }
 }
 
-function setSync(msg) { document.getElementById("syncMsg").textContent = msg; }
+function setSync(msg) { document.getElementById("syncMsg").textContent=msg; }
+
 function expiryStatus(item) {
   if (!item.expiryDate) return "ok";
-  const d = Math.ceil((new Date(item.expiryDate) - new Date()) / 86400000);
-  return d < 0 ? "expired" : d <= 3 ? "warning" : "ok";
+  const d = Math.ceil((new Date(item.expiryDate)-new Date())/86400000);
+  return d<0?"expired":d<=3?"warning":"ok";
 }
-function isUrgent(item) { return (item.counts.opened||0) > 0 || (item.counts.low||0) > 0; }
 
+function isUrgent(item) {
+  if (item.type==="measurable") return (parseFloat(item.data.qty)||0) <= 0;
+  return (item.data.opened||0)>0||(item.data.low||0)>0;
+}
+
+// ── Render ──
 function renderTable() {
   const search = document.getElementById("search").value.toLowerCase();
   const fCat   = document.getElementById("filterCat").value;
   const fLoc   = document.getElementById("filterLoc").value;
+
   const filtered = items
-    .filter(i => (fCat==="All"||i.category===fCat) && (fLoc==="All"||i.location===fLoc) && i.name.toLowerCase().includes(search))
-    .sort((a,b) => (isUrgent(a)?0:1)-(isUrgent(b)?0:1));
+    .filter(i=>(fCat==="All"||i.category===fCat)&&(fLoc==="All"||i.location===fLoc)&&i.name.toLowerCase().includes(search))
+    .sort((a,b)=>(isUrgent(a)?0:1)-(isUrgent(b)?0:1));
 
   document.getElementById("s-total").textContent   = items.length;
   document.getElementById("s-fridge").textContent  = items.filter(i=>i.location==="Fridge").length;
@@ -328,38 +415,50 @@ function renderTable() {
   const urgentCount = items.filter(isUrgent).length;
   const alertBox = document.getElementById("alertBox");
   let alertHtml = "";
-  if (urgentCount) alertHtml += `📦 <strong>${urgentCount} item(s)</strong> are open or low — use these first. `;
+  if (urgentCount) alertHtml += `📦 <strong>${urgentCount} item(s)</strong> are open, low, or empty — check these. `;
   if (expiring)    alertHtml += `⚠️ <strong>${expiring} item(s)</strong> expire within 3 days. `;
   if (expired)     alertHtml += `❌ <strong>${expired} item(s)</strong> have expired.`;
   alertBox.innerHTML = alertHtml;
-  alertBox.className = "alert" + (alertHtml ? " show" : "");
+  alertBox.className = "alert"+(alertHtml?" show":"");
 
   const tbody = document.getElementById("tbody");
-  if (filtered.length === 0) { tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No items yet — tap "+ Add item"!</td></tr>`; return; }
+  if (filtered.length===0) { tbody.innerHTML=`<tr class="empty-row"><td colspan="7">No items yet — tap "+ Add item"!</td></tr>`; return; }
 
   tbody.innerHTML = filtered.map(item => {
     const urgent = isUrgent(item);
     const locCls = item.location==="Fridge"?"loc-fridge":item.location==="Freezer"?"loc-freezer":"loc-pantry";
     const expSt  = expiryStatus(item);
-    const hasAny = FILLS.some(f=>(item.counts[f.value]||0)>0);
-    const countersHtml = hasAny
-      ? FILLS.map(f => {
-          const val = item.counts[f.value]||0;
-          if (!val) return "";
-          return `<div class="fill-counter" style="color:${f.color};border-color:${f.color}40;background:${f.bg}">
-            <span class="fc-emoji">${f.emoji}</span>
-            <button class="fc-btn" onclick="changeCount('${item.id}','${f.value}',-1)" style="color:${f.color}">−</button>
-            <span class="fc-val" style="color:${f.color}">${val}</span>
-            <button class="fc-btn" onclick="changeCount('${item.id}','${f.value}',1)" style="color:${f.color}">+</button>
-            <span class="fc-unit">${esc(item.unit)}</span>
-          </div>`;
-        }).join("")
-      : `<span class="all-zero">—</span>`;
+
+    let qtyHtml = "";
+    if (item.type==="measurable") {
+      const qty  = parseFloat(item.data.qty)||0;
+      const step = parseFloat(item.step)||100;
+      qtyHtml = `<div class="qty-display">
+        <button class="qty-btn" onclick="changeQty('${item.id}',-${step})">−</button>
+        <span class="qty-val">${qty}</span>
+        <span class="qty-unit">${esc(item.unit)}</span>
+        <button class="qty-btn" onclick="changeQty('${item.id}',${step})">+</button>
+        <span class="qty-step">(±${step})</span>
+      </div>`;
+    } else {
+      const hasAny = FILLS.some(f=>(item.data[f.value]||0)>0);
+      qtyHtml = hasAny
+        ? `<div class="fill-counters">${FILLS.map(f=>{
+            const val=item.data[f.value]||0; if(!val) return "";
+            return `<div class="fill-counter" style="color:${f.color};border-color:${f.color}40;background:${f.bg}">
+              <span class="fc-emoji">${f.emoji}</span>
+              <button class="fc-btn" onclick="changeCount('${item.id}','${f.value}',-1)" style="color:${f.color}">−</button>
+              <span class="fc-val" style="color:${f.color}">${val}</span>
+              <button class="fc-btn" onclick="changeCount('${item.id}','${f.value}',1)" style="color:${f.color}">+</button>
+              <span class="fc-unit">${esc(item.unit)}</span>
+            </div>`;}).join("")}</div>`
+        : `<span class="all-zero">—</span>`;
+    }
 
     let expBadge = `<span style="color:#d1d5db;font-size:13px">—</span>`;
     if (item.expiryDate) {
       const cfg={ok:{l:"OK",c:"#22c55e",bg:"#f0fdf4"},warning:{l:"Exp. soon",c:"#f59e0b",bg:"#fffbeb"},expired:{l:"Expired",c:"#ef4444",bg:"#fef2f2"}}[expSt];
-      expBadge = `<span class="exp-badge" style="background:${cfg.bg};color:${cfg.c}">${cfg.l}</span>`;
+      expBadge=`<span class="exp-badge" style="background:${cfg.bg};color:${cfg.c}">${cfg.l}</span>`;
     }
 
     return `<tr class="${urgent?"urgent":""}">
@@ -370,7 +469,7 @@ function renderTable() {
       </td>
       <td class="td-cat">${esc(item.category)}</td>
       <td><span class="loc-badge ${locCls}">${esc(item.location)}</span></td>
-      <td><div class="fill-counters">${countersHtml}</div></td>
+      <td>${qtyHtml}</td>
       <td class="td-exp">${item.expiryDate||"—"}</td>
       <td>${expBadge}</td>
       <td class="actions">
@@ -384,14 +483,30 @@ function renderTable() {
 function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function changeCount(id, level, delta) {
-  items = items.map(i => i.id!=id ? i : {...i, counts:{...i.counts,[level]:Math.max(0,(i.counts[level]||0)+delta)}});
+  items = items.map(i => i.id!=id?i:{...i,data:{...i.data,[level]:Math.max(0,(i.data[level]||0)+delta)}});
   renderTable(); saveToSheets();
 }
-function deleteItem(id) {
-  if (!confirm("Delete this item?")) return;
-  items = items.filter(i=>i.id!=id); renderTable(); saveToSheets();
+
+function changeQty(id, delta) {
+  items = items.map(i => i.id!=id?i:{...i,data:{qty:Math.max(0,(parseFloat(i.data.qty)||0)+delta)}});
+  renderTable(); saveToSheets();
 }
 
+function deleteItem(id) {
+  if(!confirm("Delete this item?")) return;
+  items=items.filter(i=>i.id!=id); renderTable(); saveToSheets();
+}
+
+// ── Type selector ──
+function selectType(type) {
+  selectedType = type;
+  document.getElementById("type-count").classList.toggle("selected", type==="countable");
+  document.getElementById("type-measure").classList.toggle("selected", type==="measurable");
+  document.getElementById("section-countable").style.display  = type==="countable"?"block":"none";
+  document.getElementById("section-measurable").style.display = type==="measurable"?"block":"none";
+}
+
+// ── Modal fills ──
 function buildModalFills() {
   document.getElementById("modalFills").innerHTML = FILLS.map(f=>`
     <div class="modal-fill-row" style="background:${f.bg};border-color:${f.color}40">
@@ -404,36 +519,77 @@ function buildModalFills() {
     </div>`).join("");
 }
 function modalCount(level, delta) {
-  modalCounts[level] = Math.max(0,(modalCounts[level]||0)+delta);
-  document.getElementById("mc-"+level).textContent = modalCounts[level];
+  modalCounts[level]=Math.max(0,(modalCounts[level]||0)+delta);
+  document.getElementById("mc-"+level).textContent=modalCounts[level];
 }
+
 function openAdd() {
-  editId=null; modalCounts={full:0,half:0,low:0,opened:0};
+  editId=null; modalCounts={full:0,half:0,low:0,opened:0}; selectedType="countable";
   document.getElementById("modalTitle").textContent="Add item";
   document.querySelector(".btn-save").textContent="Add item";
-  document.getElementById("f-name").value=""; document.getElementById("f-unit").value="units";
-  document.getElementById("f-cat").value="🥩 Proteins"; document.getElementById("f-loc").value="Fridge";
-  document.getElementById("f-expiry").value=""; document.getElementById("f-notes").value="";
-  buildModalFills(); document.getElementById("overlay").classList.add("open");
+  document.getElementById("f-name").value="";
+  document.getElementById("f-unit-count").value="units";
+  document.getElementById("f-qty").value="";
+  document.getElementById("f-unit-measure").value="g";
+  document.getElementById("f-step").value="100";
+  document.getElementById("f-cat").value="🥩 Proteins";
+  document.getElementById("f-loc").value="Fridge";
+  document.getElementById("f-expiry").value="";
+  document.getElementById("f-notes").value="";
+  selectType("countable");
+  buildModalFills();
+  document.getElementById("overlay").classList.add("open");
 }
+
 function openEdit(id) {
   const item=items.find(i=>i.id==id); if(!item) return;
-  editId=id; modalCounts={...{full:0,half:0,low:0,opened:0},...item.counts};
+  editId=id; selectedType=item.type||"countable";
+  modalCounts={...{full:0,half:0,low:0,opened:0},...(item.type==="countable"?item.data:{})};
   document.getElementById("modalTitle").textContent="Edit item";
   document.querySelector(".btn-save").textContent="Save changes";
-  document.getElementById("f-name").value=item.name||""; document.getElementById("f-unit").value=item.unit||"units";
-  document.getElementById("f-cat").value=item.category||"🥩 Proteins"; document.getElementById("f-loc").value=item.location||"Fridge";
-  document.getElementById("f-expiry").value=item.expiryDate||""; document.getElementById("f-notes").value=item.notes||"";
-  buildModalFills(); document.getElementById("overlay").classList.add("open");
+  document.getElementById("f-name").value=item.name||"";
+  document.getElementById("f-cat").value=item.category||"🥩 Proteins";
+  document.getElementById("f-loc").value=item.location||"Fridge";
+  document.getElementById("f-expiry").value=item.expiryDate||"";
+  document.getElementById("f-notes").value=item.notes||"";
+  if (item.type==="measurable") {
+    document.getElementById("f-qty").value=item.data.qty||"";
+    document.getElementById("f-unit-measure").value=item.unit||"g";
+    document.getElementById("f-step").value=item.step||100;
+  } else {
+    document.getElementById("f-unit-count").value=item.unit||"units";
+  }
+  selectType(selectedType);
+  buildModalFills();
+  document.getElementById("overlay").classList.add("open");
 }
+
 function closeModal() { document.getElementById("overlay").classList.remove("open"); }
+
 function saveItem() {
   const name=document.getElementById("f-name").value.trim();
   if(!name){alert("Please enter a name.");return;}
-  const newItem={id:editId||Date.now().toString(),name,category:document.getElementById("f-cat").value,location:document.getElementById("f-loc").value,counts:{...modalCounts},unit:document.getElementById("f-unit").value,expiryDate:document.getElementById("f-expiry").value,notes:document.getElementById("f-notes").value};
+  let data, unit, step=100;
+  if (selectedType==="countable") {
+    data={...modalCounts};
+    unit=document.getElementById("f-unit-count").value;
+  } else {
+    data={qty:parseFloat(document.getElementById("f-qty").value)||0};
+    unit=document.getElementById("f-unit-measure").value;
+    step=parseFloat(document.getElementById("f-step").value)||100;
+  }
+  const newItem={
+    id:editId||Date.now().toString(), name,
+    category:document.getElementById("f-cat").value,
+    location:document.getElementById("f-loc").value,
+    type:selectedType, data, unit,
+    expiryDate:document.getElementById("f-expiry").value,
+    notes:document.getElementById("f-notes").value, step
+  };
   items=editId?items.map(i=>i.id==editId?newItem:i):[...items,newItem];
   closeModal(); renderTable(); saveToSheets();
 }
+
 document.getElementById("overlay").addEventListener("click",function(e){if(e.target===this)closeModal();});
 </script>
 </body>
