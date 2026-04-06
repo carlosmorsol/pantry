@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Our Recipes 📖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:  #1a3a2a; --green2: #5cb85c;
+      --bg: #fafaf7; --bg2: #f3f4ec; --border: #e5e7eb;
+      --text: #111827; --muted: #6b7280;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); font-size: 15px; }
+
+    /* ── PIN ── */
+    #pin-screen { position: fixed; inset: 0; background: var(--green); display: flex; align-items: center; justify-content: center; z-index: 999; flex-direction: column; gap: 20px; }
+    #pin-screen h2 { font-family: 'Lora', serif; font-size: 26px; color: #fafaf7; }
+    #pin-screen p  { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: -12px; }
+    .pin-dots { display: flex; gap: 14px; }
+    .pin-dot  { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); background: transparent; transition: background 0.15s; }
+    .pin-dot.filled { background: var(--green2); border-color: var(--green2); }
+    .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 230px; }
+    .pin-btn  { background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 17px; font-size: 20px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .pin-btn:hover { background: rgba(255,255,255,0.2); }
+    .pin-error { color: #f87171; font-size: 13px; height: 18px; text-align: center; }
+
+    /* ── HEADER ── */
+    header { background: var(--green); color: white; padding: 24px 24px 20px; }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+    header h1 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+    header p  { font-size: 13px; opacity: 0.6; margin-top: 4px; }
+    .header-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .sync-badge { font-size: 12px; background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 8px; white-space: nowrap; }
+    .btn-refresh { background: rgba(255,255,255,0.12); color: white; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 500; }
+    .btn-add { background: var(--green2); color: white; border: none; border-radius: 8px; padding: 9px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+    /* CATEGORY TABS */
+    .cat-tabs { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .cat-tab { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s; }
+    .cat-tab.active { background: var(--green2); color: white; border-color: var(--green2); }
+
+    /* STATS */
+    .stats { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .stat { background: rgba(255,255,255,0.1); border-radius: 9px; padding: 7px 13px; text-align: center; min-width: 64px; }
+    .stat-val { font-size: 20px; font-weight: 700; }
+    .stat-lbl { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+
+    /* ── MAIN ── */
+    main { max-width: 1000px; margin: 0 auto; padding: 20px 16px 48px; }
+
+    .search-bar { margin-bottom: 16px; }
+    .search-bar input { width: 100%; padding: 10px 14px; border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px; font-family: inherit; background: white; color: var(--text); }
+
+    /* RECIPE CARDS GRID */
+    .recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+    .recipe-card { background: white; border-radius: 14px; border: 1.5px solid var(--border); padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+    .recipe-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-color: var(--green2); }
+    .recipe-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .recipe-name { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .recipe-cat  { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+    .cat-breakfast { background: #fef9c3; color: #854d0e; }
+    .cat-lunch     { background: #dcfce7; color: #166534; }
+    .cat-dinner    { background: #eff6ff; color: #1e40af; }
+    .cat-snack     { background: #faf5ff; color: #6b21a8; }
+
+    .recipe-servings { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .recipe-ingredients { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+    .ing-pill { background: var(--bg2); color: var(--text); border-radius: 6px; padding: 3px 8px; font-size: 12px; border: 1px solid var(--border); }
+    .recipe-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .btn-edit-card { flex: 1; background: none; border: 1.5px solid var(--border); border-radius: 7px; padding: 7px; cursor: pointer; font-size: 13px; color: #374151; font-family: inherit; font-weight: 500; }
+    .btn-edit-card:hover { background: var(--bg2); }
+    .btn-del-card  { background: none; border: 1.5px solid #fca5a5; border-radius: 7px; padding: 7px 12px; cursor: pointer; font-size: 13px; color: #ef4444; font-family: inherit; }
+    .btn-del-card:hover { background: #fef2f2; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-state div { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 15px; }
+
+    .tip { margin-top: 16px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #166534; }
+
+    /* ── MODAL ── */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+    .overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 24px 60px rgba(0,0,0,0.2); max-height: 92vh; overflow-y: auto; }
+    .modal h2 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--green); }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .field label span { font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .field input, .field select { width: 100%; padding: 10px 13px; border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px; font-family: inherit; background: white; color: var(--text); }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--green2); }
+
+    /* INGREDIENTS IN MODAL */
+    .ing-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .ing-row  { display: grid; grid-template-columns: 1fr 80px 80px 36px; gap: 7px; align-items: center; }
+    .ing-row input, .ing-row select { padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 13px; font-family: inherit; background: white; }
+    .ing-row input:focus, .ing-row select:focus { outline: none; border-color: var(--green2); }
+    .btn-remove-ing { background: none; border: 1.5px solid #fca5a5; border-radius: 7px; width: 36px; height: 36px; cursor: pointer; font-size: 15px; color: #ef4444; display: flex; align-items: center; justify-content: center; }
+    .btn-add-ing { background: var(--bg2); border: 1.5px dashed var(--border); border-radius: 8px; padding: 9px; font-size: 13px; color: var(--muted); cursor: pointer; font-family: inherit; width: 100%; text-align: center; font-weight: 500; }
+    .btn-add-ing:hover { border-color: var(--green2); color: var(--green); }
+
+    .ing-header { display: grid; grid-template-columns: 1fr 80px 80px 36px; gap: 7px; margin-bottom: 4px; }
+    .ing-header span { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-cancel { flex: 1; padding: 11px; border-radius: 9px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+    .btn-save   { flex: 2; padding: 11px; border-radius: 9px; border: none; background: var(--green); color: white; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit; }
+    .btn-save:hover { background: #254d38; }
+
+    @media (max-width: 500px) {
+      .ing-row { grid-template-columns: 1fr 70px 70px 32px; }
+      .recipes-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PIN -->
+<div id="pin-screen">
+  <h2>📖 Our Recipes</h2>
+  <p>Enter your PIN to continue</p>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-grid">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn" onclick="pinPress('⌫')">⌫</button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn" onclick="pinPress('✓')">✓</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>📖 Our Recipes</h1>
+        <p>Your personal recipe book</p>
+      </div>
+      <div class="header-actions">
+        <span class="sync-badge" id="syncMsg">⏳ Loading...</span>
+        <button class="btn-refresh" onclick="loadRecipes()">🔄 Refresh</button>
+        <button class="btn-add" onclick="openAdd()">+ Add recipe</button>
+      </div>
+    </div>
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="setFilter('All')">All</button>
+      <button class="cat-tab" onclick="setFilter('Breakfast')">🌅 Breakfast</button>
+      <button class="cat-tab" onclick="setFilter('Lunch')">☀️ Lunch</button>
+      <button class="cat-tab" onclick="setFilter('Dinner')">🌙 Dinner</button>
+      <button class="cat-tab" onclick="setFilter('Snack')">🍎 Snack</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="s-total"     style="color:#86efac">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat"><div class="stat-val" id="s-breakfast" style="color:#fcd34d">0</div><div class="stat-lbl">Breakfast</div></div>
+      <div class="stat"><div class="stat-val" id="s-lunch"     style="color:#86efac">0</div><div class="stat-lbl">Lunch</div></div>
+      <div class="stat"><div class="stat-val" id="s-dinner"    style="color:#93c5fd">0</div><div class="stat-lbl">Dinner</div></div>
+      <div class="stat"><div class="stat-val" id="s-snack"     style="color:#c4b5fd">0</div><div class="stat-lbl">Snack</div></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="🔍 Search recipes..." oninput="renderRecipes()" />
+    </div>
+    <div class="recipes-grid" id="recipesGrid"></div>
+    <div class="tip">💡 Tap a recipe card to see its ingredients. Later we'll use these to build your batch cooking plan and shopping list.</div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Add recipe</h2>
+    <div class="field">
+      <label>Recipe name *</label>
+      <input type="text" id="f-name" placeholder="e.g. Teriyaki Chicken, Overnight Oats..." />
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="f-cat">
+        <option value="Breakfast">🌅 Breakfast</option>
+        <option value="Lunch">☀️ Lunch</option>
+        <option value="Dinner">🌙 Dinner</option>
+        <option value="Snack">🍎 Snack</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Servings <span>(how many people / portions)</span></label>
+      <input type="number" id="f-servings" min="1" value="2" />
+    </div>
+    <div class="field">
+      <label>Ingredients</label>
+      <div class="ing-header">
+        <span>Ingredient</span><span>Amount</span><span>Unit</span><span></span>
+      </div>
+      <div class="ing-list" id="ingList"></div>
+      <button class="btn-add-ing" onclick="addIngRow()">+ Add ingredient</button>
+    </div>
+    <div class="field">
+      <label>Notes <span>(optional)</span></label>
+      <input type="text" id="f-notes" placeholder="e.g. marinate overnight, gluten-free..." />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save"   onclick="saveRecipe()">Add recipe</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CORRECT_PIN = "1007";
+const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbzE5QviLE9rZBP_UXQQcMHswoUYC6ebIjfJsEbAvj2C_2vRNW_OxOo3Iy-BmySMjX6O/exec";
+const SHEET = "recipes";
+const UNITS = ["units","g","kg","ml","L","tsp","tbsp","cup","can","bag","slice","pinch"];
+const CAT_CLASSES = { Breakfast:"cat-breakfast", Lunch:"cat-lunch", Dinner:"cat-dinner", Snack:"cat-snack" };
+const CAT_EMOJIS  = { Breakfast:"🌅", Lunch:"☀️", Dinner:"🌙", Snack:"🍎" };
+
+// ── PIN ──
+let pinEntry = "";
+function pinPress(k) {
+  if (k==="⌫") { pinEntry=pinEntry.slice(0,-1); }
+  else if (k==="✓") { checkPin(); return; }
+  else if (pinEntry.length<4) { pinEntry+=k; }
+  updateDots();
+  if (pinEntry.length===4) setTimeout(checkPin,120);
+}
+function updateDots() {
+  for(let i=0;i<4;i++) document.getElementById("d"+i).className="pin-dot"+(i<pinEntry.length?" filled":"");
+}
+function checkPin() {
+  if (pinEntry===CORRECT_PIN) {
+    document.getElementById("pin-screen").style.display="none";
+    document.getElementById("app").style.display="block";
+    loadRecipes();
+  } else {
+    document.getElementById("pin-error").textContent="Incorrect PIN. Try again.";
+    pinEntry=""; updateDots();
+    setTimeout(()=>document.getElementById("pin-error").textContent="",1500);
+  }
+}
+
+// ── Data ──
+let recipes = [];
+let editId  = null;
+let activeFilter = "All";
+
+// recipe: { id, name, category, servings, ingredients:[{name,amount,unit}], notes }
+function rowToRecipe(r) {
+  let ingredients = [];
+  try { ingredients = JSON.parse(r[4]); } catch {}
+  return { id:r[0], name:r[1], category:r[2], servings:r[3], ingredients, notes:r[5] };
+}
+function recipeToRow(r) {
+  return [r.id, r.name, r.category, r.servings, JSON.stringify(r.ingredients), r.notes];
+}
+
+async function loadRecipes() {
+  setSync("⏳ Syncing...");
+  try {
+    const res  = await fetch(`${SCRIPT_URL}?action=read&sheet=${SHEET}`);
+    const data = await res.json();
+    recipes = data.filter(r=>r[0]&&r[1]).map(rowToRecipe);
+    setSync("☁️ Synced ✓");
+  } catch { setSync("⚠️ Could not connect"); }
+  renderRecipes();
+}
+
+async function saveToSheets() {
+  setSync("💾 Saving...");
+  try {
+    await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ action:"write", sheet:SHEET, items:recipes.map(recipeToRow) }) });
+    setSync("☁️ Saved ✓");
+  } catch { setSync("⚠️ Save failed"); }
+}
+
+function setSync(msg) { document.getElementById("syncMsg").textContent=msg; }
+function setFilter(cat) {
+  activeFilter=cat;
+  document.querySelectorAll(".cat-tab").forEach(t=>t.classList.remove("active"));
+  event.target.classList.add("active");
+  renderRecipes();
+}
+
+function renderRecipes() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const filtered = recipes.filter(r =>
+    (activeFilter==="All" || r.category===activeFilter) &&
+    r.name.toLowerCase().includes(search));
+
+  document.getElementById("s-total").textContent     = recipes.length;
+  document.getElementById("s-breakfast").textContent = recipes.filter(r=>r.category==="Breakfast").length;
+  document.getElementById("s-lunch").textContent     = recipes.filter(r=>r.category==="Lunch").length;
+  document.getElementById("s-dinner").textContent    = recipes.filter(r=>r.category==="Dinner").length;
+  document.getElementById("s-snack").textContent     = recipes.filter(r=>r.category==="Snack").length;
+
+  const grid = document.getElementById("recipesGrid");
+  if (filtered.length===0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div>📖</div><p>No recipes yet — tap "+ Add recipe" to get started!</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(recipe => {
+    const catClass = CAT_CLASSES[recipe.category] || "cat-breakfast";
+    const catEmoji = CAT_EMOJIS[recipe.category]  || "";
+    const ingPills = (recipe.ingredients||[]).slice(0,4).map(i =>
+      `<span class="ing-pill">${esc(i.name)}</span>`).join("") +
+      (recipe.ingredients.length>4 ? `<span class="ing-pill">+${recipe.ingredients.length-4} more</span>` : "");
+
+    return `<div class="recipe-card">
+      <div class="recipe-card-top">
+        <div class="recipe-name">${esc(recipe.name)}</div>
+        <span class="recipe-cat ${catClass}">${catEmoji} ${esc(recipe.category)}</span>
+      </div>
+      <div class="recipe-servings">👥 ${recipe.servings} serving${recipe.servings!=1?'s':''} · ${recipe.ingredients.length} ingredient${recipe.ingredients.length!=1?'s':''}</div>
+      ${recipe.notes ? `<div style="font-size:12px;color:#9ca3af;margin-top:4px">${esc(recipe.notes)}</div>` : ''}
+      <div class="recipe-ingredients">${ingPills}</div>
+      <div class="recipe-actions">
+        <button class="btn-edit-card" onclick="openEdit('${recipe.id}')">✏️ Edit</button>
+        <button class="btn-del-card"  onclick="deleteRecipe('${recipe.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function deleteRecipe(id) {
+  if (!confirm("Delete this recipe?")) return;
+  recipes = recipes.filter(r=>r.id!=id);
+  renderRecipes(); saveToSheets();
+}
+
+// ── Ingredient rows ──
+let ingRows = [];
+function addIngRow(ing={name:"",amount:"",unit:"g"}) {
+  const id = Date.now()+"_"+Math.random();
+  ingRows.push({id,...ing});
+  renderIngRows();
+}
+function removeIngRow(id) {
+  ingRows = ingRows.filter(r=>r.id!=id);
+  renderIngRows();
+}
+function renderIngRows() {
+  document.getElementById("ingList").innerHTML = ingRows.map(row => `
+    <div class="ing-row" id="ir-${row.id}">
+      <input type="text"   value="${esc(row.name)}"   placeholder="e.g. Chicken" oninput="updateIng('${row.id}','name',this.value)" />
+      <input type="number" value="${esc(row.amount)}" placeholder="500"          oninput="updateIng('${row.id}','amount',this.value)" min="0" />
+      <select onchange="updateIng('${row.id}','unit',this.value)">
+        ${UNITS.map(u=>`<option value="${u}" ${row.unit===u?"selected":""}>${u}</option>`).join("")}
+      </select>
+      <button class="btn-remove-ing" onclick="removeIngRow('${row.id}')">✕</button>
+    </div>`).join("");
+}
+function updateIng(id, field, val) {
+  ingRows = ingRows.map(r => r.id===id ? {...r,[field]:val} : r);
+}
+
+// ── Modal ──
+function openAdd() {
+  editId=null; ingRows=[];
+  addIngRow(); // start with one empty row
+  document.getElementById("modalTitle").textContent = "Add recipe";
+  document.querySelector(".btn-save").textContent   = "Add recipe";
+  document.getElementById("f-name").value     = "";
+  document.getElementById("f-cat").value      = "Breakfast";
+  document.getElementById("f-servings").value = "2";
+  document.getElementById("f-notes").value    = "";
+  document.getElementById("overlay").classList.add("open");
+}
+
+function openEdit(id) {
+  const recipe = recipes.find(r=>r.id==id);
+  if (!recipe) return;
+  editId=id;
+  ingRows = (recipe.ingredients||[]).map(i=>({id:Date.now()+"_"+Math.random(),...i}));
+  if (ingRows.length===0) addIngRow();
+  document.getElementById("modalTitle").textContent = "Edit recipe";
+  document.querySelector(".btn-save").textContent   = "Save changes";
+  document.getElementById("f-name").value     = recipe.name||"";
+  document.getElementById("f-cat").value      = recipe.category||"Breakfast";
+  document.getElementById("f-servings").value = recipe.servings||"2";
+  document.getElementById("f-notes").value    = recipe.notes||"";
+  renderIngRows();
+  document.getElementById("overlay").classList.add("open");
+}
+
+function closeModal() { document.getElementById("overlay").classList.remove("open"); }
+
+function saveRecipe() {
+  const name = document.getElementById("f-name").value.trim();
+  if (!name) { alert("Please enter a recipe name."); return; }
+  const ingredients = ingRows.filter(r=>r.name.trim()).map(({name,amount,unit})=>({name,amount,unit}));
+  const newRecipe = {
+    id:          editId || Date.now().toString(),
+    name,
+    category:    document.getElementById("f-cat").value,
+    servings:    document.getElementById("f-servings").value,
+    ingredients,
+    notes:       document.getElementById("f-notes").value,
+  };
+  recipes = editId ? recipes.map(r=>r.id==editId?newRecipe:r) : [...recipes, newRecipe];
+  closeModal(); renderRecipes(); saveToSheets();
+}
+
+document.getElementById("overlay").addEventListener("click",function(e){ if(e.target===this) closeModal(); });
+</script>
+</body>
+</html>
