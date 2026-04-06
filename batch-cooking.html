@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Batch Cooking Plan 🍳</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:  #1a3a2a; --green2: #5cb85c;
+      --bg: #fafaf7; --bg2: #f3f4ec; --border: #e5e7eb;
+      --text: #111827; --muted: #6b7280;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); font-size: 15px; }
+
+    /* ── PIN ── */
+    #pin-screen { position: fixed; inset: 0; background: var(--green); display: flex; align-items: center; justify-content: center; z-index: 999; flex-direction: column; gap: 20px; }
+    #pin-screen h2 { font-family: 'Lora', serif; font-size: 26px; color: #fafaf7; }
+    #pin-screen p  { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: -12px; }
+    .pin-dots { display: flex; gap: 14px; }
+    .pin-dot  { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); background: transparent; transition: background 0.15s; }
+    .pin-dot.filled { background: var(--green2); border-color: var(--green2); }
+    .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 230px; }
+    .pin-btn  { background: rgba(255,255,255,0.1); color: white; border: 1.5px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 17px; font-size: 20px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .pin-btn:hover { background: rgba(255,255,255,0.2); }
+    .pin-error { color: #f87171; font-size: 13px; height: 18px; text-align: center; }
+
+    /* ── HEADER ── */
+    header { background: var(--green); color: white; padding: 24px 24px 20px; }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+    header h1 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+    header p  { font-size: 13px; opacity: 0.6; margin-top: 4px; }
+    .header-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .sync-badge { font-size: 12px; background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 8px; white-space: nowrap; }
+    .btn-refresh { background: rgba(255,255,255,0.12); color: white; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 500; }
+    .btn-shopping { background: var(--green2); color: white; border: none; border-radius: 8px; padding: 9px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+    .stats { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .stat { background: rgba(255,255,255,0.1); border-radius: 9px; padding: 7px 13px; text-align: center; min-width: 64px; }
+    .stat-val { font-size: 20px; font-weight: 700; }
+    .stat-lbl { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+
+    /* ── MAIN ── */
+    main { max-width: 800px; margin: 0 auto; padding: 20px 16px 48px; }
+
+    .section-title { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 14px; }
+
+    /* RECIPE PLAN CARDS */
+    .plan-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+
+    .plan-card { background: white; border-radius: 12px; border: 1.5px solid var(--border); padding: 16px 18px; display: flex; align-items: center; gap: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .plan-card.active { border-color: var(--green2); background: #f8fdf8; }
+    .plan-card-info { flex: 1; }
+    .plan-card-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .plan-card-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .plan-card-cat  { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 2px 7px; margin-right: 6px; }
+    .cat-breakfast { background: #fef9c3; color: #854d0e; }
+    .cat-lunch     { background: #dcfce7; color: #166534; }
+    .cat-dinner    { background: #eff6ff; color: #1e40af; }
+    .cat-snack     { background: #faf5ff; color: #6b21a8; }
+
+    .plan-counter { display: flex; align-items: center; gap: 10px; }
+    .plan-btn { background: none; border: 1.5px solid var(--border); border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: inherit; color: var(--muted); transition: all 0.1s; }
+    .plan-btn:hover { border-color: var(--green2); color: var(--green); }
+    .plan-btn.active-btn { border-color: var(--green2); color: var(--green); }
+    .plan-count { font-size: 20px; font-weight: 700; min-width: 28px; text-align: center; color: var(--text); }
+    .plan-count.has-count { color: var(--green2); }
+    .plan-times { font-size: 11px; color: var(--muted); text-align: center; }
+
+    /* SUMMARY */
+    .summary-box { background: white; border-radius: 12px; border: 1.5px solid var(--border); padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); margin-bottom: 20px; }
+    .summary-title { font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .summary-ing-list { display: flex; flex-direction: column; gap: 8px; }
+    .summary-ing-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; background: var(--bg2); font-size: 14px; }
+    .summary-ing-name { font-weight: 600; color: var(--text); }
+    .summary-ing-qty  { color: var(--muted); font-size: 13px; }
+    .empty-summary { color: var(--muted); font-size: 14px; text-align: center; padding: 20px; }
+
+    .btn-generate { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--green); color: white; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 16px; }
+    .btn-generate:hover { background: #254d38; }
+    .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .tip { margin-top: 16px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #166534; }
+
+    /* SHOPPING LIST MODAL */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+    .overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 24px 60px rgba(0,0,0,0.2); max-height: 92vh; overflow-y: auto; }
+    .modal h2 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; margin-bottom: 6px; color: var(--green); }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+    .shop-section { margin-bottom: 18px; }
+    .shop-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
+    .shop-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: background 0.1s; }
+    .shop-item:hover { background: var(--bg2); }
+    .shop-item.checked { opacity: 0.45; }
+    .shop-check { width: 20px; height: 20px; border-radius: 5px; border: 2px solid var(--border); background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .shop-item.checked .shop-check { background: var(--green2); border-color: var(--green2); color: white; }
+    .shop-item-name { flex: 1; font-size: 14px; font-weight: 600; }
+    .shop-item-qty  { font-size: 13px; color: var(--muted); }
+    .shop-item.in-pantry { background: #f0fdf4; }
+    .shop-item.in-pantry .shop-item-name { color: var(--muted); }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-close { flex: 1; padding: 11px; border-radius: 9px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+
+    @media (max-width: 480px) {
+      .plan-card { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PIN -->
+<div id="pin-screen">
+  <h2>🍳 Batch Cooking</h2>
+  <p>Enter your PIN to continue</p>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-grid">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn" onclick="pinPress('⌫')">⌫</button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn" onclick="pinPress('✓')">✓</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>🍳 Batch Cooking Plan</h1>
+        <p>Biweekly plan · 2 people</p>
+      </div>
+      <div class="header-actions">
+        <span class="sync-badge" id="syncMsg">⏳ Loading...</span>
+        <button class="btn-refresh" onclick="loadAll()">🔄 Refresh</button>
+        <button class="btn-shopping" onclick="generateShoppingList()">🛒 Shopping List</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="s-recipes" style="color:#86efac">0</div><div class="stat-lbl">Recipes</div></div>
+      <div class="stat"><div class="stat-val" id="s-planned" style="color:#fcd34d">0</div><div class="stat-lbl">Planned</div></div>
+      <div class="stat"><div class="stat-val" id="s-meals"   style="color:#93c5fd">0</div><div class="stat-lbl">Total meals</div></div>
+      <div class="stat"><div class="stat-val" id="s-ings"    style="color:#c4b5fd">0</div><div class="stat-lbl">Ingredients</div></div>
+    </div>
+  </header>
+
+  <main>
+    <p class="section-title">How many times this fortnight?</p>
+    <div class="plan-grid" id="planGrid"></div>
+
+    <div class="summary-box">
+      <div class="summary-title">📦 Total ingredients needed</div>
+      <div class="summary-ing-list" id="summaryList"><div class="empty-summary">Set how many times you'll make each recipe to see the totals.</div></div>
+      <button class="btn-generate" id="btnGenerate" onclick="generateShoppingList()" disabled>🛒 Generate Shopping List</button>
+    </div>
+
+    <div class="tip">💡 Set the number of times you'll cook each recipe this fortnight. The app will calculate total ingredients and compare with your pantry to build your shopping list.</div>
+  </main>
+</div>
+
+<!-- Shopping List Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>🛒 Shopping List</h2>
+    <p class="modal-sub">Based on your batch cooking plan vs what's in your pantry</p>
+    <div id="shopContent"></div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CORRECT_PIN  = "1007";
+const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbyA-o1h6jP3ZX91RC461fwUYulJtj3Hb2Z0cD2QqKsAjZkaHgaer_h46XjbBIfUJWM0/exec";
+const PANTRY_SCRIPT = "https://script.google.com/macros/s/AKfycbyA-o1h6jP3ZX91RC461fwUYulJtj3Hb2Z0cD2QqKsAjZkaHgaer_h46XjbBIfUJWM0/exec";
+const CAT_CLASSES  = { Breakfast:"cat-breakfast", Lunch:"cat-lunch", Dinner:"cat-dinner", Snack:"cat-snack" };
+const CAT_EMOJIS   = { Breakfast:"🌅", Lunch:"☀️", Dinner:"🌙", Snack:"🍎" };
+
+// ── PIN ──
+let pinEntry = "";
+function pinPress(k) {
+  if (k==="⌫") { pinEntry=pinEntry.slice(0,-1); }
+  else if (k==="✓") { checkPin(); return; }
+  else if (pinEntry.length<4) { pinEntry+=k; }
+  updateDots();
+  if (pinEntry.length===4) setTimeout(checkPin,120);
+}
+function updateDots() {
+  for(let i=0;i<4;i++) document.getElementById("d"+i).className="pin-dot"+(i<pinEntry.length?" filled":"");
+}
+function checkPin() {
+  if (pinEntry===CORRECT_PIN) {
+    document.getElementById("pin-screen").style.display="none";
+    document.getElementById("app").style.display="block";
+    loadAll();
+  } else {
+    document.getElementById("pin-error").textContent="Incorrect PIN. Try again.";
+    pinEntry=""; updateDots();
+    setTimeout(()=>document.getElementById("pin-error").textContent="",1500);
+  }
+}
+
+// ── Data ──
+let recipes  = [];
+let pantry   = [];
+let plan     = {}; // { recipeId: count }
+let shopChecked = {};
+
+function rowToRecipe(r) {
+  let ingredients = [];
+  try { ingredients = JSON.parse(r[4]); } catch {}
+  return { id:r[0], name:r[1], category:r[2], servings:r[3], ingredients, notes:r[5] };
+}
+function rowToPantryItem(r) {
+  let counts = { full:0, half:0, low:0, opened:0 };
+  try { counts = JSON.parse(r[4]); } catch {}
+  return { id:r[0], name:r[1], category:r[2], location:r[3], counts, unit:r[5] };
+}
+
+async function loadAll() {
+  setSync("⏳ Loading...");
+  try {
+    const [recRes, panRes] = await Promise.all([
+      fetch(`${SCRIPT_URL}?action=read&sheet=recipes`),
+      fetch(`${PANTRY_SCRIPT}?action=read`)
+    ]);
+    const recData = await recRes.json();
+    const panData = await panRes.json();
+    recipes = recData.filter(r=>r[0]&&r[1]).map(rowToRecipe);
+    pantry  = panData.filter(r=>r[0]&&r[1]).map(rowToPantryItem);
+    setSync("☁️ Synced ✓");
+  } catch { setSync("⚠️ Could not connect"); }
+  renderPlan();
+}
+
+function setSync(msg) { document.getElementById("syncMsg").textContent=msg; }
+
+function setCount(id, delta) {
+  const cur = plan[id] || 0;
+  plan[id] = Math.max(0, cur + delta);
+  renderPlan();
+}
+
+function renderPlan() {
+  const totalMeals = Object.values(plan).reduce((a,b)=>a+b,0);
+  const planned    = Object.values(plan).filter(v=>v>0).length;
+
+  document.getElementById("s-recipes").textContent = recipes.length;
+  document.getElementById("s-planned").textContent = planned;
+  document.getElementById("s-meals").textContent   = totalMeals;
+
+  // Render plan cards
+  const grid = document.getElementById("planGrid");
+  if (recipes.length===0) {
+    grid.innerHTML = `<div style="text-align:center;padding:40px;color:#9ca3af">No recipes found. Add recipes first in the Recipes app.</div>`;
+  } else {
+    grid.innerHTML = recipes.map(r => {
+      const count   = plan[r.id] || 0;
+      const catCls  = CAT_CLASSES[r.category] || "cat-breakfast";
+      const catEmoji= CAT_EMOJIS[r.category]  || "";
+      return `<div class="plan-card ${count>0?'active':''}">
+        <div class="plan-card-info">
+          <div class="plan-card-name">${esc(r.name)}</div>
+          <div class="plan-card-meta">
+            <span class="plan-card-cat ${catCls}">${catEmoji} ${esc(r.category)}</span>
+            ${r.ingredients.length} ingredient${r.ingredients.length!=1?'s':''}
+            · ${r.servings} serving${r.servings!=1?'s':''}
+          </div>
+        </div>
+        <div class="plan-counter">
+          <button class="plan-btn ${count>0?'active-btn':''}" onclick="setCount('${r.id}',-1)">−</button>
+          <div>
+            <div class="plan-count ${count>0?'has-count':''}">${count}</div>
+            <div class="plan-times">times</div>
+          </div>
+          <button class="plan-btn ${count>0?'active-btn':''}" onclick="setCount('${r.id}',1)">+</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  // Calculate total ingredients
+  const totals = {}; // { "ingredient_name_unit": { name, unit, total } }
+  recipes.forEach(r => {
+    const times = plan[r.id] || 0;
+    if (times===0) return;
+    (r.ingredients||[]).forEach(ing => {
+      const key = `${ing.name.toLowerCase()}_${ing.unit}`;
+      if (!totals[key]) totals[key] = { name:ing.name, unit:ing.unit, total:0 };
+      totals[key].total += parseFloat(ing.amount||0) * times;
+    });
+  });
+
+  const ingList = Object.values(totals);
+  document.getElementById("s-ings").textContent = ingList.length;
+
+  const summaryEl = document.getElementById("summaryList");
+  if (ingList.length===0) {
+    summaryEl.innerHTML = `<div class="empty-summary">Set how many times you'll make each recipe to see the totals.</div>`;
+    document.getElementById("btnGenerate").disabled = true;
+  } else {
+    summaryEl.innerHTML = ingList.map(i =>
+      `<div class="summary-ing-row">
+        <span class="summary-ing-name">${esc(i.name)}</span>
+        <span class="summary-ing-qty">${i.total % 1 === 0 ? i.total : i.total.toFixed(1)} ${esc(i.unit)}</span>
+      </div>`
+    ).join("");
+    document.getElementById("btnGenerate").disabled = false;
+  }
+}
+
+function getPantryTotal(name) {
+  // Find item in pantry by name (case insensitive)
+  const found = pantry.find(p => p.name.toLowerCase() === name.toLowerCase());
+  if (!found) return 0;
+  // Sum all fill levels as units
+  const c = found.counts || {};
+  return (c.full||0) + (c.half||0) + (c.low||0) + (c.opened||0);
+}
+
+function generateShoppingList() {
+  const totals = {};
+  recipes.forEach(r => {
+    const times = plan[r.id] || 0;
+    if (times===0) return;
+    (r.ingredients||[]).forEach(ing => {
+      const key = `${ing.name.toLowerCase()}_${ing.unit}`;
+      if (!totals[key]) totals[key] = { name:ing.name, unit:ing.unit, total:0 };
+      totals[key].total += parseFloat(ing.amount||0) * times;
+    });
+  });
+
+  const ingList = Object.values(totals);
+  if (ingList.length===0) { alert("Set your plan first!"); return; }
+
+  const needToBuy = [];
+  const inPantry  = [];
+
+  ingList.forEach(i => {
+    const have = getPantryTotal(i.name);
+    if (have > 0) {
+      inPantry.push({...i, have});
+    } else {
+      needToBuy.push(i);
+    }
+  });
+
+  let html = "";
+  if (needToBuy.length > 0) {
+    html += `<div class="shop-section">
+      <div class="shop-section-title">🛒 Need to buy (${needToBuy.length})</div>
+      ${needToBuy.map(i => {
+        const id = `shop_${i.name}`;
+        const checked = shopChecked[id] ? "checked" : "";
+        return `<div class="shop-item ${checked}" onclick="toggleCheck('${id}',this)" id="${id}">
+          <div class="shop-check">${shopChecked[id]?"✓":""}</div>
+          <span class="shop-item-name">${esc(i.name)}</span>
+          <span class="shop-item-qty">${i.total%1===0?i.total:i.total.toFixed(1)} ${esc(i.unit)}</span>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  if (inPantry.length > 0) {
+    html += `<div class="shop-section">
+      <div class="shop-section-title">✅ Already in pantry (${inPantry.length})</div>
+      ${inPantry.map(i =>
+        `<div class="shop-item in-pantry">
+          <div class="shop-check" style="background:#dcfce7;border-color:#86efac;color:#166534">✓</div>
+          <span class="shop-item-name">${esc(i.name)}</span>
+          <span class="shop-item-qty">${i.total%1===0?i.total:i.total.toFixed(1)} ${esc(i.unit)} needed</span>
+        </div>`
+      ).join("")}
+    </div>`;
+  }
+
+  document.getElementById("shopContent").innerHTML = html;
+  document.getElementById("overlay").classList.add("open");
+}
+
+function toggleCheck(id, el) {
+  shopChecked[id] = !shopChecked[id];
+  el.classList.toggle("checked");
+  el.querySelector(".shop-check").textContent = shopChecked[id] ? "✓" : "";
+}
+
+function closeModal() { document.getElementById("overlay").classList.remove("open"); }
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+document.getElementById("overlay").addEventListener("click",function(e){ if(e.target===this) closeModal(); });
+</script>
+</body>
+</html>
